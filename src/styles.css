@@ -15,23 +15,23 @@
   --color-border: var(--border);
   --color-gold: var(--gold);
   --color-success: var(--success);
-  --font-display: "Orbitron", sans-serif;
-  --font-sans: "Rajdhani", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-sans: "Manrope", sans-serif;
 }
 
 :root {
   --radius: 1rem;
-  --background: oklch(0.12 0.03 265);
+  --background: oklch(0.14 0.01 250);
   --foreground: oklch(0.97 0.01 240);
-  --card: oklch(0.18 0.04 260);
-  --primary: oklch(0.78 0.15 220);
+  --card: oklch(0.2 0.015 250);
+  --primary: oklch(0.88 0.2 130);
   --primary-foreground: oklch(0.12 0.03 265);
   --accent: oklch(0.6 0.25 300);
   --muted-foreground: oklch(0.7 0.03 250);
-  --border: oklch(0.78 0.15 220 / 35%);
+  --border: oklch(1 0 0 / 9%);
   --gold: oklch(0.8 0.16 75);
   --success: oklch(0.78 0.18 150);
-  --glow: 0 0 24px oklch(0.78 0.15 220 / 60%);
+  --glow: 0 0 32px oklch(0.88 0.2 130 / 35%);
 }
 
 @layer base {
@@ -40,10 +40,11 @@
 }
 
 @utility neon-bg {
-  background:
-    repeating-linear-gradient(90deg, transparent 0 90px, oklch(0.6 0.25 280 / 25%) 90px 92px, transparent 92px 180px, oklch(0.78 0.15 220 / 30%) 180px 181px),
-    var(--color-background);
+  background: radial-gradient(60% 40% at 50% 0%, oklch(0.88 0.2 130 / 12%), transparent), radial-gradient(50% 40% at 100% 100%, oklch(0.6 0.25 300 / 12%), transparent), var(--color-background);
 }
 @utility glow { box-shadow: var(--glow); }
 @utility pulse-ring { animation: ring 2s ease-out infinite; }
-@keyframes ring { 0% { box-shadow: 0 0 0 0 oklch(0.78 0.15 220 / 70%);} 100% { box-shadow: 0 0 0 22px transparent; } }
+@keyframes ring { 0% { box-shadow: 0 0 0 0 oklch(0.88 0.2 130 / 60%);} 100% { box-shadow: 0 0 0 22px transparent; } }
+
+@utility pop-in { animation: popin .35s cubic-bezier(.2,1.4,.4,1); }
+@keyframes popin { from { transform: scale(.3); opacity: 0 } to { transform: scale(1); opacity: 1 } }

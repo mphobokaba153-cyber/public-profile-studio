@@ -80,7 +80,7 @@ function Index() {
           )}
 
           <div className="mt-6 flex justify-center">
-            <span className="rounded-full border bg-card px-4 py-1 text-xs">Powered by <b className="text-primary">Mpho Labs</b></span>
+            <span className="rounded-full border bg-card px-4 py-1 text-xs">Powered by <b className="text-primary">NextraPro</b></span>
           </div>
 
           <div className="mt-6 flex items-center justify-between">

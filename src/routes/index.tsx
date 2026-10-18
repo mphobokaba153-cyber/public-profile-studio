@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Play, Square, Home, Link2, ScanLine, Plus, Trash2, Server, FileCode2, Radio, CheckCircle2, Loader2, X } from "lucide-react";
+import { Play, Square, Home, BarChart3, ScrollText, Link2, ScanLine, Plus, Trash2, Server, FileCode2, Radio, CheckCircle2, Loader2, X } from "lucide-react";
 import bot from "@/assets/bot.jpg";
 
 export const Route = createFileRoute("/")({
@@ -39,10 +39,12 @@ const btn = "rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-fo
 function Index() {
   const [nav, setNav] = useState<"mt" | "home" | "ai">("home");
   const [running, setRunning] = useState(false);
-  const [stage, setStage] = useState(0); // 0 off,1 server,2 script,3 signal
+  const [stage, setStage] = useState(0);
+  const [tab, setTab] = useState<"pairs" | "logs" | null>(null);
   const [pairs, setPairs] = usePersist<Pair[]>("pairs", []);
   const [account, setAccount] = usePersist<Account | null>("account", null);
   const [logs, setLogs] = usePersist<string[]>("logs", []);
+  const [robots, setRobots] = usePersist<string[]>("robots", ["Nova AI", "Gold Sniper"]);
   const log = (m: string) => setLogs((l) => [`${new Date().toLocaleTimeString()}  ${m}`, ...l].slice(0, 60));
 
   const toggle = () => {
@@ -53,82 +55,98 @@ function Index() {
   };
 
   return (
-    <main className="neon-bg min-h-screen">
-      <div className="mx-auto flex min-h-screen max-w-md flex-col px-4 pb-28 pt-5">
-        <header className="mb-5 flex items-center gap-3">
-          <img src={bot} alt="" className="h-10 w-10 rounded-2xl object-cover" />
-          <div className="flex-1">
-            <div className="font-display text-lg font-bold leading-none">MPHO FX</div>
-            <div className="text-xs text-muted-foreground">Powered by <b className="text-primary">NextraPro</b></div>
+    <main className="neon-bg flex min-h-screen items-center justify-center p-4">
+      <div className="relative w-full max-w-sm overflow-hidden rounded-[2.5rem] border bg-background/80 backdrop-blur-xl glow">
+        {running && (
+          <div className="pop-in absolute right-4 top-16 z-50 flex items-center gap-2 rounded-full border bg-card/90 p-1.5 pr-4 backdrop-blur">
+            <img src={bot} alt="Bot running" className="pulse-ring h-10 w-10 rounded-full object-cover" />
+            <div className="text-xs">
+              <div className="font-bold text-primary">{["", "Server on", "Script on", "Signal on"][stage]}</div>
+              <div className="text-muted-foreground">{["", "Starting…", "Reading script…", "Waiting for signal"][stage]}</div>
+            </div>
           </div>
-          <span className={`rounded-full px-3 py-1 text-xs font-bold ${account?.connected ? "bg-success/15 text-success" : "bg-card text-muted-foreground"}`}>
-            {account?.connected ? `${account.platform} • ${account.login}` : "Not connected"}
-          </span>
-        </header>
+        )}
 
-        {nav === "home" && <HomeTab {...{ running, stage, toggle, pairs, setPairs, logs, log }} />}
-        {nav === "mt" && <MtTab account={account} setAccount={setAccount} log={log} />}
-        {nav === "ai" && <AiTab pairs={pairs} log={log} />}
-      </div>
-
-      {running && (
-        <div className="pop-in fixed right-4 top-20 z-50 flex items-center gap-2 rounded-full border bg-card/90 p-1.5 pr-4 backdrop-blur glow">
-          <img src={bot} alt="Bot running" className="pulse-ring h-11 w-11 rounded-full object-cover" />
-          <div className="text-xs">
-            <div className="font-bold text-primary">Nova AI live</div>
-            <div className="text-muted-foreground">{["", "Server on…", "Reading script…", "Waiting for signal"][stage]}</div>
-          </div>
-        </div>
-      )}
-
-      <nav className="fixed inset-x-0 bottom-4 z-40 mx-auto flex max-w-xs items-center justify-around rounded-full border bg-card/90 p-2 backdrop-blur">
-        {([["mt", "MT Connect", Link2], ["home", "Home", Home], ["ai", "AI Scan", ScanLine]] as const).map(([k, n, Icon]) => (
-          <button key={k} onClick={() => setNav(k)} className={`flex flex-col items-center gap-0.5 rounded-full px-4 py-1.5 text-[11px] font-semibold transition ${nav === k ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>
-            <Icon className="h-5 w-5" />{n}
-          </button>
-        ))}
-      </nav>
-    </main>
-  );
-}
-
-function HomeTab({ running, stage, toggle, pairs, setPairs, logs, log }: any) {
-  const [tab, setTab] = useState<"pairs" | "script" | "logs">("pairs");
-  const steps = [["Server", Server], ["Script", FileCode2], ["Signal", Radio]] as const;
-  return (
-    <div className="space-y-4">
-      <section className={`${card} relative overflow-hidden text-center`}>
-        <img src={bot} alt="" className="absolute inset-0 h-full w-full object-cover opacity-15" />
-        <div className="relative">
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">Nova AI</p>
-          <h1 className="font-display text-3xl font-bold">{running ? "Trading live" : "Bot offline"}</h1>
-          <button onClick={toggle} className={`mx-auto mt-5 flex h-28 w-28 flex-col items-center justify-center rounded-full font-display text-sm font-bold transition active:scale-95 ${running ? "pulse-ring bg-accent text-foreground" : "bg-primary text-primary-foreground glow"}`}>
-            {running ? <Square className="h-7 w-7" /> : <Play className="h-7 w-7" />}{running ? "STOP" : "START"}
-          </button>
-          <div className="mt-5 grid grid-cols-3 gap-2">
-            {steps.map(([n, Icon], i) => (
-              <div key={n} className={`rounded-2xl border p-2 text-xs ${stage > i ? "border-primary text-primary" : "text-muted-foreground"}`}>
-                <Icon className="mx-auto mb-1 h-4 w-4" />{n} {stage > i ? "ON" : "off"}
+        {nav === "home" && (
+          <>
+            <div className="relative h-[400px]">
+              <img src={bot} alt="Nova AI robot" width={768} height={1024} className="absolute inset-0 h-full w-full object-cover opacity-50" />
+              <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/10 to-background" />
+              <div className="relative flex flex-col items-center pt-6">
+                <div className="flex items-center gap-2 rounded-full border bg-card/60 px-3 py-1 backdrop-blur">
+                  <span className="font-display text-sm font-bold tracking-wider">MPHO FX</span>
+                  <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold text-primary-foreground">PRO</span>
+                </div>
+                <div className={`mt-8 h-32 w-32 overflow-hidden rounded-full border-2 border-primary ${running ? "pulse-ring" : "glow"}`}>
+                  <img src={bot} alt="" className="h-full w-full object-cover" />
+                </div>
+                <h1 className="mt-6 font-display text-4xl font-bold tracking-tight">Nova AI</h1>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {running ? <span className="text-success">● Trading live</span> : "Fully automated mobile EA"}
+                </p>
               </div>
-            ))}
+            </div>
+
+            <div className="relative -mt-6 px-5">
+              <div className="flex items-center justify-between rounded-full border bg-card/80 px-6 py-2 backdrop-blur-xl">
+                <button onClick={() => setTab(tab === "pairs" ? null : "pairs")} className={`flex flex-col items-center gap-0.5 text-xs font-bold ${tab === "pairs" ? "text-primary" : ""}`}>
+                  <BarChart3 className="h-5 w-5" /> PAIRS
+                </button>
+                <button onClick={toggle} className={`-my-6 flex h-20 w-20 flex-col items-center justify-center rounded-full font-display text-xs font-bold transition active:scale-95 ${running ? "bg-accent text-foreground pulse-ring" : "bg-primary text-primary-foreground glow"}`}>
+                  {running ? <Square className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+                  {running ? "STOP" : "START"}
+                </button>
+                <button onClick={() => setTab(tab === "logs" ? null : "logs")} className={`flex flex-col items-center gap-0.5 text-xs font-bold ${tab === "logs" ? "text-primary" : ""}`}>
+                  <ScrollText className="h-5 w-5" /> LOGS
+                </button>
+              </div>
+
+              {tab === "pairs" && <div className="mt-4"><PairsPanel pairs={pairs} setPairs={setPairs} log={log} /></div>}
+              {tab === "logs" && (
+                <div className="mt-4 space-y-3">
+                  <ScriptPanel running={running} log={log} />
+                  <div className={`${card} max-h-40 space-y-1 overflow-auto font-mono text-xs text-muted-foreground`}>
+                    {logs.length ? logs.map((l, i) => <div key={i}>{l}</div>) : "No activity yet."}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-6 flex justify-center">
+                <span className="rounded-full border bg-card/60 px-4 py-1 text-xs">Powered by <b className="text-primary">NextraPro</b></span>
+              </div>
+
+              <div className="mt-6 flex items-center justify-between">
+                <h2 className="font-display text-sm font-bold">Robot List</h2>
+                <button onClick={() => setRobots((r) => [...r, `Bot ${r.length + 1}`])} className="rounded-full bg-primary/15 p-1 text-primary" aria-label="Add robot"><Plus className="h-4 w-4" /></button>
+              </div>
+              <div className="mt-2 space-y-2 pb-4">
+                {robots.map((r) => (
+                  <div key={r} className="flex items-center gap-3 rounded-2xl border bg-card/70 p-2 backdrop-blur">
+                    <img src={bot} alt="" className="h-9 w-9 rounded-full object-cover" />
+                    <span className="flex-1 font-bold">{r}</span>
+                    <button onClick={() => setRobots((x) => x.filter((y) => y !== r))} className="rounded-full bg-background p-1" aria-label="Remove robot"><X className="h-4 w-4" /></button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+
+        {nav !== "home" && (
+          <div className="min-h-[640px] p-5 pt-6">
+            {nav === "mt" ? <MtTab account={account} setAccount={setAccount} log={log} /> : <AiTab pairs={pairs} log={log} />}
           </div>
-        </div>
-      </section>
+        )}
 
-      <div className="flex rounded-full border bg-card/70 p-1">
-        {(["pairs", "script", "logs"] as const).map((t) => (
-          <button key={t} onClick={() => setTab(t)} className={`flex-1 rounded-full py-2 text-sm font-semibold capitalize ${tab === t ? "bg-background text-primary" : "text-muted-foreground"}`}>{t}</button>
-        ))}
+        <nav className="flex justify-around border-t bg-card/80 py-3 text-xs backdrop-blur-xl">
+          {([["mt", "MetaTrader", Link2], ["home", "Home", Home], ["ai", "AI Scan", ScanLine]] as const).map(([k, n, Icon]) => (
+            <button key={k} onClick={() => setNav(k)} className={`flex flex-col items-center gap-1 ${nav === k ? "text-primary" : "text-muted-foreground"}`}>
+              <Icon className="h-5 w-5" />{n}
+            </button>
+          ))}
+        </nav>
       </div>
-
-      {tab === "pairs" && <PairsPanel pairs={pairs} setPairs={setPairs} log={log} />}
-      {tab === "script" && <ScriptPanel running={running} log={log} />}
-      {tab === "logs" && (
-        <div className={`${card} max-h-72 space-y-1 overflow-auto font-mono text-xs text-muted-foreground`}>
-          {logs.length ? logs.map((l: string, i: number) => <div key={i}>{l}</div>) : "No activity yet."}
-        </div>
-      )}
-    </div>
+    </main>
   );
 }
 

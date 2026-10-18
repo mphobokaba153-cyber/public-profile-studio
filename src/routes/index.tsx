@@ -102,7 +102,7 @@ function HomeTab({ running, stage, toggle, pairs, setPairs, logs, log }: any) {
         <div className="relative">
           <p className="text-xs uppercase tracking-widest text-muted-foreground">Nova AI</p>
           <h1 className="font-display text-3xl font-bold">{running ? "Trading live" : "Bot offline"}</h1>
-          <button onClick={toggle} className={`mx-auto mt-5 flex h-28 w-28 flex-col items-center justify-center rounded-full font-display text-sm font-bold transition active:scale-95 ${running ? "bg-destructive pulse-ring bg-accent text-foreground" : "bg-primary text-primary-foreground glow"}`}>
+          <button onClick={toggle} className={`mx-auto mt-5 flex h-28 w-28 flex-col items-center justify-center rounded-full font-display text-sm font-bold transition active:scale-95 ${running ? "pulse-ring bg-accent text-foreground" : "bg-primary text-primary-foreground glow"}`}>
             {running ? <Square className="h-7 w-7" /> : <Play className="h-7 w-7" />}{running ? "STOP" : "START"}
           </button>
           <div className="mt-5 grid grid-cols-3 gap-2">

@@ -208,33 +208,76 @@ function ScriptPanel({ running, log }: { running: boolean; log: (m: string) => v
   );
 }
 
+function MtCard({ account, busy }: { account: Account | null; busy: boolean }) {
+  return (
+    <div className="relative overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-br from-card via-background to-card p-5 glow">
+      <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/15 blur-2xl" />
+      <div className="pointer-events-none absolute -bottom-12 -left-8 h-36 w-36 rounded-full bg-accent/15 blur-2xl" />
+      <div className="relative flex items-start justify-between">
+        <div>
+          <p className="font-display text-lg font-bold tracking-wide">Meta Thread</p>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">MPHO FX • NextraPro</p>
+        </div>
+        <img src={bot} alt="" className="h-10 w-10 rounded-full border border-primary/40 object-cover" />
+      </div>
+      <div className="relative mt-6 flex items-center gap-2">
+        <span className="h-8 w-11 rounded-md border border-gold/60 bg-gold/20" />
+        <Radio className={`h-4 w-4 ${account?.connected ? "text-success" : "text-muted-foreground"}`} />
+      </div>
+      <div className="relative mt-4">
+        {account?.connected ? (
+          <>
+            <p className="font-mono text-lg font-bold tracking-[0.2em]">{account.login.replace(/\d(?=\d{3})/g, "$& ")}</p>
+            <div className="mt-2 flex items-end justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span>{account.server}</span>
+              <span className="rounded-full bg-success/15 px-2 py-0.5 font-bold text-success">{account.platform} • LIVE</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="font-mono text-lg font-bold tracking-[0.2em] text-muted-foreground">•••• •••• ••••</p>
+            <div className="mt-2 flex items-end justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
+              <span>{busy ? "Connecting…" : "No account linked"}</span>
+              <span className="rounded-full bg-background px-2 py-0.5 font-bold">{busy ? "WAIT" : "OFFLINE"}</span>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function MtTab({ account, setAccount, log }: { account: Account | null; setAccount: any; log: (m: string) => void }) {
   const [f, setF] = useState({ login: "", password: "", server: "", platform: "MT5" as "MT4" | "MT5" });
   const [busy, setBusy] = useState(false);
-  if (account?.connected) return (
-    <div className={`${card} text-center`}>
-      <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
-      <h2 className="mt-2 font-display text-xl font-bold">Account connected</h2>
-      <p className="text-sm text-muted-foreground">{account.platform} • {account.login} • {account.server}</p>
-      <button onClick={() => { setAccount(null); log("MetaTrader disconnected"); }} className="mt-4 flex w-full items-center justify-center gap-1 rounded-xl border py-2.5 text-sm"><X className="h-4 w-4" />Disconnect</button>
-    </div>
-  );
   const connect = () => {
     setBusy(true);
     setTimeout(() => { setBusy(false); setAccount({ login: f.login, server: f.server, platform: f.platform, connected: true }); log(`Connected ${f.platform} ${f.login}`); }, 1200);
   };
   return (
-    <div className={`${card} space-y-3`}>
-      <h2 className="font-display text-xl font-bold">MetaTrader Connect</h2>
-      <div className="flex gap-2">
-        {(["MT4", "MT5"] as const).map((p) => <button key={p} onClick={() => setF({ ...f, platform: p })} className={`flex-1 rounded-xl border py-2 text-sm font-bold ${f.platform === p ? "border-primary text-primary" : "text-muted-foreground"}`}>{p}</button>)}
-      </div>
-      <input className={input} placeholder="Login ID" value={f.login} onChange={(e) => setF({ ...f, login: e.target.value })} />
-      <input className={input} type="password" placeholder="Password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} />
-      <input className={input} placeholder="Server (e.g. Exness-MT5Real)" value={f.server} onChange={(e) => setF({ ...f, server: e.target.value })} />
-      <button onClick={connect} disabled={busy || !f.login || !f.password || !f.server} className={`${btn} flex w-full items-center justify-center gap-2`}>
-        {busy && <Loader2 className="h-4 w-4 animate-spin" />}{busy ? "Connecting…" : "Connect account"}
-      </button>
+    <div className="space-y-4">
+      <MtCard account={account} busy={busy} />
+      {account?.connected ? (
+        <div className={`${card} text-center`}>
+          <CheckCircle2 className="mx-auto h-10 w-10 text-success" />
+          <h2 className="mt-2 font-display text-lg font-bold">Account connected</h2>
+          <p className="text-sm text-muted-foreground">{account.platform} • {account.login} • {account.server}</p>
+          <button onClick={() => { setAccount(null); log("MetaTrader disconnected"); }} className="mt-4 flex w-full items-center justify-center gap-1 rounded-xl border py-2.5 text-sm"><X className="h-4 w-4" />Disconnect</button>
+        </div>
+      ) : (
+        <div className={`${card} space-y-3`}>
+          <h2 className="font-display text-xl font-bold">Connect account</h2>
+          <div className="flex gap-2">
+            {(["MT4", "MT5"] as const).map((p) => <button key={p} onClick={() => setF({ ...f, platform: p })} className={`flex-1 rounded-xl border py-2 text-sm font-bold ${f.platform === p ? "border-primary text-primary" : "text-muted-foreground"}`}>{p}</button>)}
+          </div>
+          <input className={input} placeholder="Login ID" value={f.login} onChange={(e) => setF({ ...f, login: e.target.value })} />
+          <input className={input} type="password" placeholder="Password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} />
+          <input className={input} placeholder="Server (e.g. Exness-MT5Real)" value={f.server} onChange={(e) => setF({ ...f, server: e.target.value })} />
+          <button onClick={connect} disabled={busy || !f.login || !f.password || !f.server} className={`${btn} flex w-full items-center justify-center gap-2`}>
+            {busy && <Loader2 className="h-4 w-4 animate-spin" />}{busy ? "Connecting…" : "Connect account"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

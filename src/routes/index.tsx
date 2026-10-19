@@ -228,7 +228,7 @@ function MtCard({ account, busy }: { account: Account | null; busy: boolean }) {
       <div className="relative mt-4">
         {account?.connected ? (
           <>
-            <p className="font-mono text-lg font-bold tracking-[0.2em]">{account.login.replace(/\d(?=\d{3})/g, "$& ")}</p>
+            <p className="font-mono text-lg font-bold tracking-[0.2em]">{account.login.replace(/\B(?=(\d{4})+$)/g, " ")}</p>
             <div className="mt-2 flex items-end justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
               <span>{account.server}</span>
               <span className="rounded-full bg-success/15 px-2 py-0.5 font-bold text-success">{PLATFORM_NAME[account.platform]} • LIVE</span>

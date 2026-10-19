@@ -24,6 +24,7 @@ export const Route = createFileRoute("/")({
 const MENTOR_PAIRS = ["XAUUSD", "EURUSD", "GBPUSD", "GBPJPY", "USDJPY", "US30", "NAS100", "BTCUSD"];
 type Pair = { id: string; symbol: string; lot: number; trades: number; on: boolean };
 type Account = { login: string; server: string; platform: "MT4" | "MT5"; connected: boolean };
+const PLATFORM_NAME: Record<"MT4" | "MT5", string> = { MT4: "MetaTrader 4", MT5: "MetaTrader 5" };
 
 function usePersist<T>(key: string, init: T) {
   const [v, setV] = useState<T>(init);
@@ -215,8 +216,8 @@ function MtCard({ account, busy }: { account: Account | null; busy: boolean }) {
       <div className="pointer-events-none absolute -bottom-12 -left-8 h-36 w-36 rounded-full bg-accent/15 blur-2xl" />
       <div className="relative flex items-start justify-between">
         <div>
-          <p className="font-display text-lg font-bold tracking-wide">Meta Thread</p>
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">MPHO FX • NextraPro</p>
+          <p className="font-display text-lg font-bold tracking-wide">{account?.connected ? PLATFORM_NAME[account.platform] : "Meta Thread"}</p>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{account?.connected ? "Meta Thread • NextraPro" : "MPHO FX • NextraPro"}</p>
         </div>
         <img src={bot} alt="" className="h-10 w-10 rounded-full border border-primary/40 object-cover" />
       </div>
@@ -230,7 +231,7 @@ function MtCard({ account, busy }: { account: Account | null; busy: boolean }) {
             <p className="font-mono text-lg font-bold tracking-[0.2em]">{account.login.replace(/\d(?=\d{3})/g, "$& ")}</p>
             <div className="mt-2 flex items-end justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
               <span>{account.server}</span>
-              <span className="rounded-full bg-success/15 px-2 py-0.5 font-bold text-success">{account.platform} • LIVE</span>
+              <span className="rounded-full bg-success/15 px-2 py-0.5 font-bold text-success">{PLATFORM_NAME[account.platform]} • LIVE</span>
             </div>
           </>
         ) : (
@@ -252,7 +253,7 @@ function MtTab({ account, setAccount, log }: { account: Account | null; setAccou
   const [busy, setBusy] = useState(false);
   const connect = () => {
     setBusy(true);
-    setTimeout(() => { setBusy(false); setAccount({ login: f.login, server: f.server, platform: f.platform, connected: true }); log(`Connected ${f.platform} ${f.login}`); }, 1200);
+    setTimeout(() => { setBusy(false); setAccount({ login: f.login, server: f.server, platform: f.platform, connected: true }); log(`Connected ${PLATFORM_NAME[f.platform]} • ${f.login}`); }, 1200);
   };
   return (
     <div className="space-y-4">
@@ -261,14 +262,14 @@ function MtTab({ account, setAccount, log }: { account: Account | null; setAccou
         <div className={`${card} text-center`}>
           <CheckCircle2 className="mx-auto h-10 w-10 text-success" />
           <h2 className="mt-2 font-display text-lg font-bold">Account connected</h2>
-          <p className="text-sm text-muted-foreground">{account.platform} • {account.login} • {account.server}</p>
+          <p className="text-sm text-muted-foreground">{PLATFORM_NAME[account.platform]} • {account.login} • {account.server}</p>
           <button onClick={() => { setAccount(null); log("MetaTrader disconnected"); }} className="mt-4 flex w-full items-center justify-center gap-1 rounded-xl border py-2.5 text-sm"><X className="h-4 w-4" />Disconnect</button>
         </div>
       ) : (
         <div className={`${card} space-y-3`}>
           <h2 className="font-display text-xl font-bold">Connect account</h2>
           <div className="flex gap-2">
-            {(["MT4", "MT5"] as const).map((p) => <button key={p} onClick={() => setF({ ...f, platform: p })} className={`flex-1 rounded-xl border py-2 text-sm font-bold ${f.platform === p ? "border-primary text-primary" : "text-muted-foreground"}`}>{p}</button>)}
+            {(["MT4", "MT5"] as const).map((p) => <button key={p} onClick={() => setF({ ...f, platform: p })} className={`flex-1 rounded-xl border py-2 text-sm font-bold ${f.platform === p ? "border-primary text-primary" : "text-muted-foreground"}`}>{PLATFORM_NAME[p]}</button>)}
           </div>
           <input className={input} placeholder="Login ID" value={f.login} onChange={(e) => setF({ ...f, login: e.target.value })} />
           <input className={input} type="password" placeholder="Password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} />

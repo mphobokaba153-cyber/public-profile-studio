@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Play, Square, Home, BarChart3, ScrollText, Link2, ScanLine, Plus, Trash2, Server, FileCode2, Radio, CheckCircle2, Loader2, X } from "lucide-react";
 import bot from "@/assets/bot.jpg";
+import { AiScanner } from "@/components/ai-scanner";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -285,38 +286,5 @@ function MtTab({ account, setAccount, log }: { account: Account | null; setAccou
 
 function AiTab({ pairs, log }: { pairs: Pair[]; log: (m: string) => void }) {
   const options = pairs.length ? [...new Set(pairs.map((p) => p.symbol))] : MENTOR_PAIRS;
-  const [sym, setSym] = useState(options[0]);
-  const [busy, setBusy] = useState(false);
-  const [res, setRes] = useState<{ bias: string; conf: number; trend: string; zone: string } | null>(null);
-  const scan = () => {
-    setBusy(true); setRes(null);
-    setTimeout(() => {
-      const bias = Math.random() > 0.5 ? "BUY" : "SELL";
-      const r = { bias, conf: 60 + Math.floor(Math.random() * 35), trend: bias === "BUY" ? "Bullish structure, higher lows" : "Bearish structure, lower highs", zone: bias === "BUY" ? "Demand zone below price" : "Supply zone above price" };
-      setRes(r); setBusy(false); log(`AI scan ${sym}: ${r.bias} (${r.conf}%)`);
-    }, 1600);
-  };
-  return (
-    <div className="space-y-4">
-      <div className={`${card} space-y-3`}>
-        <h2 className="font-display text-xl font-bold">AI Scan</h2>
-        <select className={input} value={sym} onChange={(e) => setSym(e.target.value)}>{options.map((o) => <option key={o}>{o}</option>)}</select>
-        <button onClick={scan} disabled={busy} className={`${btn} flex w-full items-center justify-center gap-2`}>
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ScanLine className="h-4 w-4" />}{busy ? "Scanning market…" : "Scan now"}
-        </button>
-      </div>
-      {res && (
-        <div className={`${card} pop-in`}>
-          <div className="flex items-center justify-between">
-            <span className="font-display text-lg font-bold">{sym}</span>
-            <span className={`rounded-full px-3 py-1 text-sm font-bold ${res.bias === "BUY" ? "bg-success/15 text-success" : "bg-accent/20 text-accent"}`}>{res.bias}</span>
-          </div>
-          <div className="mt-3 h-2 rounded-full bg-background"><div className="h-2 rounded-full bg-primary" style={{ width: `${res.conf}%` }} /></div>
-          <p className="mt-1 text-xs text-muted-foreground">Confidence {res.conf}%</p>
-          <p className="mt-3 text-sm">{res.trend}</p>
-          <p className="text-sm text-muted-foreground">{res.zone}</p>
-        </div>
-      )}
-    </div>
-  );
+  return <AiScanner symbols={options} log={log} />;
 }

@@ -35,7 +35,10 @@ export async function handleScanner(request: Request) {
   const iterator = result.fullStream[Symbol.asyncIterator]();
   // Await the first upstream event so a denial retains its HTTP status.
   let first;
-  try { first = await iterator.next(); } catch (error) { first = { done: false as const, value: { type: "error" as const, error } }; }
+  try {
+    first = await iterator.next();
+    while (!first.done && (first.value.type === "start" || first.value.type === "start-step")) first = await iterator.next();
+  } catch (error) { first = { done: false as const, value: { type: "error" as const, error } }; }
   const persistError = async (error: unknown) => {
     const safe = safeError(error);
     if (safe.status === 402 || safe.status === 403) await supabaseAdmin.from("scanner_service_state").upsert({ id: "chart-analysis", ...safe });
@@ -65,7 +68,7 @@ export async function handleScanner(request: Request) {
         if (!request.signal.aborted) { const safe = await persistError(error); send({ type: "error", message: safe.message, status: safe.status }); }
       } finally { controller.close(); }
     },
-    cancel() { return iterator.return?.(); },
+    async cancel() { await iterator.return?.(); },
   });
   return new Response(stream, { headers: { "Content-Type": "application/x-ndjson", "Cache-Control": "no-store, no-transform" } });
 }

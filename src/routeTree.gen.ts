@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiScanRouteImport } from './routes/api/scan'
+import { Route as ApiPublicMt5SyncRouteImport } from './routes/api/public/mt5/sync'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +23,40 @@ const ApiScanRoute = ApiScanRouteImport.update({
   path: '/api/scan',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMt5SyncRoute = ApiPublicMt5SyncRouteImport.update({
+  id: '/api/public/mt5/sync',
+  path: '/api/public/mt5/sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/scan': typeof ApiScanRoute
+  '/api/public/mt5/sync': typeof ApiPublicMt5SyncRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/scan': typeof ApiScanRoute
+  '/api/public/mt5/sync': typeof ApiPublicMt5SyncRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/scan': typeof ApiScanRoute
+  '/api/public/mt5/sync': typeof ApiPublicMt5SyncRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/scan'
+  fullPaths: '/' | '/api/scan' | '/api/public/mt5/sync'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/scan'
-  id: '__root__' | '/' | '/api/scan'
+  to: '/' | '/api/scan' | '/api/public/mt5/sync'
+  id: '__root__' | '/' | '/api/scan' | '/api/public/mt5/sync'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiScanRoute: typeof ApiScanRoute
+  ApiPublicMt5SyncRoute: typeof ApiPublicMt5SyncRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiScanRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/mt5/sync': {
+      id: '/api/public/mt5/sync'
+      path: '/api/public/mt5/sync'
+      fullPath: '/api/public/mt5/sync'
+      preLoaderRoute: typeof ApiPublicMt5SyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiScanRoute: ApiScanRoute,
+  ApiPublicMt5SyncRoute: ApiPublicMt5SyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

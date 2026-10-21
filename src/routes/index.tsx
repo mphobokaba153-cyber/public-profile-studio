@@ -217,8 +217,8 @@ function MtCard({ account, busy }: { account: Account | null; busy: boolean }) {
       <div className="pointer-events-none absolute -bottom-12 -left-8 h-36 w-36 rounded-full bg-accent/15 blur-2xl" />
       <div className="relative flex items-start justify-between">
         <div>
-          <p className="font-display text-lg font-bold tracking-wide">{account?.connected ? PLATFORM_NAME[account.platform] : "Meta Thread"}</p>
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{account?.connected ? "Meta Thread • NextraPro" : "MPHO FX • NextraPro"}</p>
+          <p className="font-display text-lg font-bold tracking-wide">{account?.connected ? PLATFORM_NAME[account.platform] : "MetaTrader"}</p>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground">{account?.connected ? "MetaTrader • NextraPro" : "MPHO FX • NextraPro"}</p>
         </div>
         <img src={bot} alt="" className="h-10 w-10 rounded-full border border-primary/40 object-cover" />
       </div>

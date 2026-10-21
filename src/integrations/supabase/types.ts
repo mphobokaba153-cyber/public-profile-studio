@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      mt5_account_state: {
+        Row: {
+          account_login: string | null
+          balance: number | null
+          bridge_online: boolean
+          bridge_version: string | null
+          broker_server: string | null
+          created_at: string
+          currency: string
+          equity: number | null
+          free_margin: number | null
+          id: number
+          leverage: number | null
+          margin: number | null
+          offline_reason: string | null
+          platform: string | null
+          read_only: boolean
+          synced_at: string
+          updated_at: string
+        }
+        Insert: {
+          account_login?: string | null
+          balance?: number | null
+          bridge_online?: boolean
+          bridge_version?: string | null
+          broker_server?: string | null
+          created_at?: string
+          currency?: string
+          equity?: number | null
+          free_margin?: number | null
+          id: number
+          leverage?: number | null
+          margin?: number | null
+          offline_reason?: string | null
+          platform?: string | null
+          read_only?: boolean
+          synced_at?: string
+          updated_at?: string
+        }
+        Update: {
+          account_login?: string | null
+          balance?: number | null
+          bridge_online?: boolean
+          bridge_version?: string | null
+          broker_server?: string | null
+          created_at?: string
+          currency?: string
+          equity?: number | null
+          free_margin?: number | null
+          id?: number
+          leverage?: number | null
+          margin?: number | null
+          offline_reason?: string | null
+          platform?: string | null
+          read_only?: boolean
+          synced_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       scanner_service_state: {
         Row: {
           id: string

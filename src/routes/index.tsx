@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Play, Square, Home, BarChart3, ScrollText, Link2, ScanLine, Plus, Trash2, Server, FileCode2, Radio, CheckCircle2, Loader2, X } from "lucide-react";
+import { Play, Square, Home, BarChart3, ScrollText, Link2, ScanLine, Plus, Trash2, Server, FileCode2, Radio, CheckCircle2, X } from "lucide-react";
 import bot from "@/assets/bot.jpg";
 import { AiScanner } from "@/components/ai-scanner";
-import { Mt5SyncPanel, useMt5Sync } from "@/components/mt5-sync-panel";
+import { Mt5SyncPanel, formatMoney, useMt5Sync } from "@/components/mt5-sync-panel";
 import type { Mt5SyncState } from "@/lib/mt5.functions";
 
 export const Route = createFileRoute("/")({

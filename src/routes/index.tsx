@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { Play, Square, Home, BarChart3, ScrollText, Link2, ScanLine, Plus, Trash2, Server, FileCode2, Radio, CheckCircle2, Loader2, X } from "lucide-react";
 import bot from "@/assets/bot.jpg";
 import { AiScanner } from "@/components/ai-scanner";
+import { Mt5SyncPanel, useMt5Sync } from "@/components/mt5-sync-panel";
+import type { Mt5SyncState } from "@/lib/mt5.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,8 +26,7 @@ export const Route = createFileRoute("/")({
 
 const MENTOR_PAIRS = ["XAUUSD", "EURUSD", "GBPUSD", "GBPJPY", "USDJPY", "US30", "NAS100", "BTCUSD"];
 type Pair = { id: string; symbol: string; lot: number; trades: number; on: boolean };
-type Account = { login: string; server: string; platform: "MT4" | "MT5"; connected: boolean };
-const PLATFORM_NAME: Record<"MT4" | "MT5", string> = { MT4: "MetaTrader 4", MT5: "MetaTrader 5" };
+const PLATFORM_NAME: Record<string, string> = { MT4: "MetaTrader 4", MT5: "MetaTrader 5" };
 
 function usePersist<T>(key: string, init: T) {
   const [v, setV] = useState<T>(init);
@@ -44,7 +45,6 @@ function Index() {
   const [stage, setStage] = useState(0);
   const [tab, setTab] = useState<"pairs" | "logs" | null>(null);
   const [pairs, setPairs] = usePersist<Pair[]>("pairs", []);
-  const [account, setAccount] = usePersist<Account | null>("account", null);
   const [logs, setLogs] = usePersist<string[]>("logs", []);
   const [robots, setRobots] = usePersist<string[]>("robots", ["Nova AI", "Gold Sniper"]);
   const log = (m: string) => setLogs((l) => [`${new Date().toLocaleTimeString()}  ${m}`, ...l].slice(0, 60));
@@ -136,7 +136,7 @@ function Index() {
 
         {nav !== "home" && (
           <div className="min-h-[640px] p-5 pt-6">
-            {nav === "mt" ? <MtTab account={account} setAccount={setAccount} log={log} /> : <AiTab pairs={pairs} log={log} />}
+            {nav === "mt" ? <MtTab /> : <AiTab pairs={pairs} log={log} />}
           </div>
         )}
 
